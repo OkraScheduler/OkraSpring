@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
-  ~  Copyright (c) 2016 Fernando Nogueira
+  ~  Copyright (c) 2017 Okra Scheduler
   ~
   ~  Permission is hereby granted, free of charge, to any person obtaining a copy
   ~  of this software and associated documentation files (the "Software"), to deal
@@ -25,17 +26,29 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <groupId>com.github.OkraSheduler</groupId>
+    <groupId>com.github.OkraScheduler</groupId>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>okra-spring</artifactId>
     <version>1.0.0</version>
 
+    <properties>
+        <source.enconding>UTF-8</source.enconding>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+
     <dependencies>
+        <!-- API -->
         <dependency>
             <groupId>com.github.OkraScheduler</groupId>
             <artifactId>okra-api</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <!-- Spring -->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-mongodb</artifactId>
@@ -54,6 +67,8 @@
             <version>1.7.21</version>
             <scope>compile</scope>
         </dependency>
+
+        <!-- Tests -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
@@ -82,9 +97,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>UTF-8</encoding>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${source.enconding}</encoding>
                 </configuration>
             </plugin>
             <plugin>
