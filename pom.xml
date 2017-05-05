@@ -28,7 +28,7 @@
 
     <groupId>com.github.OkraScheduler</groupId>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>okra-spring</artifactId>
+    <artifactId>OkraSpring</artifactId>
     <version>1.0.0</version>
 
     <properties>
@@ -44,7 +44,7 @@
         <!-- API -->
         <dependency>
             <groupId>com.github.OkraScheduler</groupId>
-            <artifactId>okra-api</artifactId>
+            <artifactId>OkraApi</artifactId>
             <version>1.0.0</version>
         </dependency>
 
@@ -76,6 +76,13 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
