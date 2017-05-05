@@ -24,20 +24,17 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <groupId>com.github.fernandonogueira.okra</groupId>
-        <artifactId>okra</artifactId>
-        <version>1.0</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
 
+    <groupId>com.github.OkraSheduler</groupId>
+    <modelVersion>4.0.0</modelVersion>
     <artifactId>okra-spring</artifactId>
+    <version>1.0.0</version>
 
     <dependencies>
         <dependency>
-            <groupId>com.github.fernandonogueira.okra</groupId>
-            <artifactId>okra-core</artifactId>
-            <version>${project.parent.version}</version>
+            <groupId>com.github.OkraScheduler</groupId>
+            <artifactId>okra-api</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>
