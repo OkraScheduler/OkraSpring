@@ -48,12 +48,12 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
     private final long defaultHeartbeatExpirationMillis;
     private final Class<T> scheduleItemClass;
 
-    public OkraSpring(MongoTemplate mongoTemplate,
-                      String database,
-                      String collection,
-                      long defaultHeartbeatExpiration,
-                      TimeUnit defaultHeartbeatExpirationUnit,
-                      Class<T> scheduleItemClass) {
+    public OkraSpring(final MongoTemplate mongoTemplate,
+                      final String database,
+                      final String collection,
+                      final long defaultHeartbeatExpiration,
+                      final TimeUnit defaultHeartbeatExpirationUnit,
+                      final Class<T> scheduleItemClass) {
         super(database, collection);
         this.mongoTemplate = mongoTemplate;
         this.defaultHeartbeatExpirationMillis = defaultHeartbeatExpirationUnit.toMillis(defaultHeartbeatExpiration);
@@ -66,37 +66,32 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
 
     @Override
     public Optional<T> poll() {
-
-        LocalDateTime expiredheartbeatDate = LocalDateTime
+        final LocalDateTime expiredHeartbeatDate = LocalDateTime
                 .now()
                 .minus(defaultHeartbeatExpirationMillis, ChronoUnit.MILLIS);
-        Criteria mainOr = generatePollCriteria(expiredheartbeatDate);
+        final Criteria mainOr = generatePollCriteria(expiredHeartbeatDate);
 
-        Update update = Update
+        final Update update = Update
                 .update("status", OkraStatus.PROCESSING)
                 .set("heartbeat", LocalDateTime.now());
 
-        Query query = Query.query(mainOr);
-
-        FindAndModifyOptions opts = new FindAndModifyOptions()
-                .returnNew(true);
+        final Query query = Query.query(mainOr);
+        final FindAndModifyOptions opts = new FindAndModifyOptions().returnNew(true);
 
         return Optional.ofNullable(mongoTemplate.findAndModify(query, update, opts, scheduleItemClass));
     }
 
-    private Criteria generatePollCriteria(LocalDateTime expiredHeartbeatDate) {
+    private Criteria generatePollCriteria(final LocalDateTime expiredHeartbeatDate) {
+        final Criteria pendingCriteria = new Criteria().andOperator(
+                Criteria.where("runDate").lt(LocalDateTime.now()),
+                Criteria.where("status").is(OkraStatus.PENDING)
+        );
 
-        Criteria pendingCriteria = new Criteria().andOperator(
-                Criteria.where("runDate")
-                        .lt(LocalDateTime.now()),
-                Criteria.where("status").is(OkraStatus.PENDING));
-
-        Criteria heartbeatCriteria = new Criteria()
-                .andOperator(
-                        Criteria.where("status").is(OkraStatus.PROCESSING),
-                        new Criteria().orOperator(
-                                Criteria.where("heartbeat").lt(expiredHeartbeatDate),
-                                Criteria.where("heartbeat").is(null)));
+        final Criteria heartbeatCriteria = new Criteria().andOperator(
+                Criteria.where("status").is(OkraStatus.PROCESSING),
+                new Criteria().orOperator(
+                        Criteria.where("heartbeat").lt(expiredHeartbeatDate),
+                        Criteria.where("heartbeat").is(null)));
 
         return new Criteria().orOperator(pendingCriteria, heartbeatCriteria);
     }
@@ -112,28 +107,27 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
     }
 
     @Override
-    public Optional<T> heartbeatAndUpdateCustomAttrs(T item, Map<String, Object> attrs) {
+    public Optional<T> heartbeatAndUpdateCustomAttrs(final T item, final Map<String, Object> attrs) {
         if (item.getId() == null
                 || item.getHeartbeat() == null
                 || item.getStatus() == null) {
             return Optional.empty();
         }
 
-        Criteria criteria =
-                Criteria.where("_id").is(new ObjectId(item.getId()))
-                        .and("status").is(OkraStatus.PROCESSING)
-                        .and("heartbeat").is(item.getHeartbeat());
+        final Criteria criteria = Criteria
+                .where("_id").is(new ObjectId(item.getId()))
+                .and("status").is(OkraStatus.PROCESSING)
+                .and("heartbeat").is(item.getHeartbeat());
 
-        Query query = Query.query(criteria);
+        final Query query = Query.query(criteria);
 
-        Update update = Update.update("heartbeat", LocalDateTime.now());
+        final Update update = Update.update("heartbeat", LocalDateTime.now());
 
         if (attrs != null && !attrs.isEmpty()) {
             attrs.forEach(update::set);
         }
 
-        FindAndModifyOptions opts = new FindAndModifyOptions()
-                .returnNew(true);
+        final FindAndModifyOptions opts = new FindAndModifyOptions().returnNew(true);
 
         LOGGER.info("Querying for schedules using query: {}", query);
 
@@ -141,7 +135,7 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
     }
 
     @Override
-    public void delete(T item) {
+    public void delete(final T item) {
         if (item.getId() == null) {
             return;
         }
@@ -150,21 +144,21 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
     }
 
     @Override
-    public void schedule(T item) {
+    public void schedule(final T item) {
         validateSchedule(item);
         item.setStatus(OkraStatus.PENDING);
         mongoTemplate.save(item);
     }
 
-    private void validateSchedule(T item) {
+    private void validateSchedule(final T item) {
         if (item.getId() != null) {
             LOGGER.error("Impossible to schedule item because it already has an ID. Item: {}", item);
             throw new OkraRuntimeException();
         }
+
         if (item.getRunDate() == null) {
             LOGGER.error("Impossible to schedule item because it doesn't have a schedule date. Item: {}", item);
             throw new OkraRuntimeException();
         }
     }
-
 }

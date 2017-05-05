@@ -48,5 +48,4 @@ public class DefaultOkraItem implements OkraItem {
     private LocalDateTime runDate;
 
     private OkraStatus status;
-
 }

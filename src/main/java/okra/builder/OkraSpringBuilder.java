@@ -38,9 +38,15 @@ public class OkraSpringBuilder<T extends OkraItem> extends OkraBuilder<T> {
     @Override
     public AbstractOkra<T> build() {
         validateConfiguration();
-        return new OkraSpring<>(mongoTemplate, getDatabase(),
-                getCollection(), getExpireDuration(),
-                getExpireDurationUnit(), getScheduleItemClass());
+
+        return new OkraSpring<>(
+                mongoTemplate,
+                getDatabase(),
+                getCollection(),
+                getExpireDuration(),
+                getExpireDurationUnit(),
+                getScheduleItemClass()
+        );
     }
 
     /**
@@ -49,28 +55,29 @@ public class OkraSpringBuilder<T extends OkraItem> extends OkraBuilder<T> {
      * @param mongoTemplate the mongo template
      * @return this builder
      */
-    public OkraSpringBuilder<T> withMongoTemplate(MongoTemplate mongoTemplate) {
+    public OkraSpringBuilder<T> withMongoTemplate(final MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
         return this;
     }
 
     @Override
     public void validateConfiguration() {
-        if (mongoTemplate == null || getCollection() == null
-                || getDatabase() == null || getCollection().isEmpty()
+        if (mongoTemplate == null
+                || getCollection() == null
+                || getCollection().isEmpty()
+                || getDatabase() == null
                 || getDatabase().isEmpty()
                 || getExpireDuration() == null
                 || getExpireDurationUnit() == null) {
+
             LOGGER.error("Invalid MongoScheduler configuration. " +
                             "Please verify params: " +
-                            "[MongoTemplate not null? {}, Database: {}, " +
+                            "[MongoTemplate is null? {}, Database: {}, " +
                             "Collection: {}, ExpireTime: {}, ExpireTimeUnit: {}]",
-                    mongoTemplate != null, getDatabase(), getCollection(),
+                    mongoTemplate == null, getDatabase(), getCollection(),
                     getExpireDuration(), getExpireDurationUnit());
 
             throw new InvalidOkraConfigurationException();
-
         }
     }
-
 }
