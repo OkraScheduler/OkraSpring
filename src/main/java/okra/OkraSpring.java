@@ -25,6 +25,7 @@ package okra;
 import okra.base.AbstractOkra;
 import okra.base.OkraItem;
 import okra.base.OkraStatus;
+import okra.exception.OkraItemNotFoundException;
 import okra.exception.OkraRuntimeException;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -62,11 +63,14 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
     }
 
     @Override
-    public void initDbIfNeeded() {
+    public Optional<T> poll() {
+        Optional<T> item = peek();
+        item.ifPresent(i -> mongoTemplate.remove(i, getCollection()));
+        return item;
     }
 
     @Override
-    public Optional<T> poll() {
+    public Optional<T> peek() {
         final LocalDateTime expiredHeartbeatDate = LocalDateTime
                 .now()
                 .minus(defaultHeartbeatExpirationMillis, ChronoUnit.MILLIS);
@@ -79,7 +83,12 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
         final Query query = Query.query(mainOr);
         final FindAndModifyOptions opts = new FindAndModifyOptions().returnNew(true);
 
-        return Optional.ofNullable(mongoTemplate.findAndModify(query, update, opts, scheduleItemClass));
+        return Optional.ofNullable(mongoTemplate.findAndModify(query, update, opts, scheduleItemClass, getCollection()));
+    }
+
+    @Override
+    public T retrieve() throws OkraItemNotFoundException {
+        return peek().orElseThrow(OkraItemNotFoundException::new);
     }
 
     private Criteria generatePollCriteria(final LocalDateTime expiredHeartbeatDate) {
@@ -99,7 +108,17 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
 
     @Override
     public Optional<T> reschedule(T item) {
-        throw new OkraRuntimeException();
+        final Query query = new Query(Criteria.where("id").is(new ObjectId(item.getId())));
+
+        final Update update = new Update();
+        update.set("status", OkraStatus.PENDING);
+        update.set("runDate", item.getRunDate());
+        update.set("heartbeat", null);
+
+        mongoTemplate.updateFirst(query, update, scheduleItemClass, getCollection());
+        item.setStatus(OkraStatus.PENDING);
+
+        return Optional.of(item);
     }
 
     @Override
@@ -132,7 +151,7 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
 
         LOGGER.info("Querying for schedules using query: {}", query);
 
-        return Optional.ofNullable(mongoTemplate.findAndModify(query, update, opts, scheduleItemClass));
+        return Optional.ofNullable(mongoTemplate.findAndModify(query, update, opts, scheduleItemClass, getCollection()));
     }
 
     @Override
@@ -141,14 +160,14 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
             return;
         }
 
-        mongoTemplate.remove(item);
+        mongoTemplate.remove(item, getCollection());
     }
 
     @Override
     public void schedule(final T item) {
         validateSchedule(item);
         item.setStatus(OkraStatus.PENDING);
-        mongoTemplate.save(item);
+        mongoTemplate.save(item, getCollection());
     }
 
     private void validateSchedule(final T item) {

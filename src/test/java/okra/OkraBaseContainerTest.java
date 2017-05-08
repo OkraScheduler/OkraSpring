@@ -62,7 +62,7 @@ public abstract class OkraBaseContainerTest {
 
         return new OkraSpringBuilder<DefaultOkraItem>()
                 .withMongoTemplate(new MongoTemplate(client, "okraBenchmark"))
-                .withDatabase("okraBenchmark")
+                .withDatabase("okraSpringTests")
                 .withSchedulerCollectionName("schedulerCollection")
                 .withExpiration(5, TimeUnit.MINUTES)
                 .withScheduledItemClass(DefaultOkraItem.class)
@@ -77,7 +77,7 @@ public abstract class OkraBaseContainerTest {
 
         return new OkraSpringBuilder<DefaultOkraItem>()
                 .withMongoTemplate(new MongoTemplate(client, "okraBenchmark"))
-                .withDatabase("okraBenchmark")
+                .withDatabase("okraSpringTests")
                 .withSchedulerCollectionName("schedulerCollection")
                 .withExpiration(5, TimeUnit.MINUTES)
                 .withScheduledItemClass(DefaultOkraItem.class)
