@@ -1,7 +1,8 @@
 # Okra
-A simple and scalable Scheduler that uses MongoDB as backend
 
-[![codecov](https://codecov.io/gh/fernandonogueira/okra/branch/master/graph/badge.svg)](https://codecov.io/gh/fernandonogueira/okra)
+A simple and scalable Scheduler that uses MongoDB as backend.
+
+[![codecov](https://codecov.io/gh/OkraScheduler/OkraSpring/branch/master/graph/badge.svg)](https://codecov.io/gh/OkraScheduler/OkraSpring)
 
 ### Requirements
 
@@ -13,7 +14,7 @@ For now Okra only has one module which requires Spring Data MongoDB to work, but
 
 ### Binaries
 
-[![](https://jitpack.io/v/fernandonogueira/okra.svg)](https://jitpack.io/#fernandonogueira/okra)
+[![](https://jitpack.io/v/OkraScheduler/OkraSpring.svg)](https://jitpack.io/#OkraScheduler/OkraSpring)
 
 #### Gradle
 build.gradle
