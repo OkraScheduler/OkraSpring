@@ -64,7 +64,7 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
 
     @Override
     public Optional<T> poll() {
-        Optional<T> item = peek();
+        final Optional<T> item = peek();
         item.ifPresent(i -> mongoTemplate.remove(i, getCollection()));
         return item;
     }
@@ -75,14 +75,11 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
                 .now()
                 .minus(defaultHeartbeatExpirationMillis, ChronoUnit.MILLIS);
         final Criteria mainOr = generatePollCriteria(expiredHeartbeatDate);
-
         final Update update = Update
                 .update("status", OkraStatus.PROCESSING)
                 .set("heartbeat", LocalDateTime.now());
-
         final Query query = Query.query(mainOr);
         final FindAndModifyOptions opts = new FindAndModifyOptions().returnNew(true);
-
         return Optional.ofNullable(mongoTemplate.findAndModify(query, update, opts, scheduleItemClass, getCollection()));
     }
 
@@ -97,32 +94,34 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
                 Criteria.where("status").is(OkraStatus.PENDING)
         );
 
-        final Criteria heartbeatCriteria = new Criteria().andOperator(
-                Criteria.where("status").is(OkraStatus.PROCESSING),
-                new Criteria().orOperator(
-                        Criteria.where("heartbeat").lt(expiredHeartbeatDate),
-                        Criteria.where("heartbeat").is(null)));
+        final Criteria heartbeatCriteria = new Criteria()
+                .andOperator(
+                        Criteria.where("status").is(OkraStatus.PROCESSING),
+                        new Criteria().orOperator(
+                                Criteria.where("heartbeat").lt(expiredHeartbeatDate),
+                                Criteria.where("heartbeat").is(null)));
 
         return new Criteria().orOperator(pendingCriteria, heartbeatCriteria);
     }
 
     @Override
-    public Optional<T> reschedule(T item) {
+    public Optional<T> reschedule(final T item) {
         final Query query = new Query(Criteria.where("id").is(new ObjectId(item.getId())));
 
-        final Update update = new Update();
-        update.set("status", OkraStatus.PENDING);
-        update.set("runDate", item.getRunDate());
-        update.set("heartbeat", null);
+        final Update update = new Update()
+                .set("status", OkraStatus.PENDING)
+                .set("runDate", item.getRunDate())
+                .set("heartbeat", null);
 
         mongoTemplate.updateFirst(query, update, scheduleItemClass, getCollection());
+
         item.setStatus(OkraStatus.PENDING);
 
         return Optional.of(item);
     }
 
     @Override
-    public Optional<T> heartbeat(T item) {
+    public Optional<T> heartbeat(final T item) {
         return heartbeatAndUpdateCustomAttrs(item, null);
     }
 

@@ -23,6 +23,7 @@
 package okra.builder;
 
 import okra.OkraSpring;
+import okra.Preconditions;
 import okra.base.AbstractOkra;
 import okra.base.OkraItem;
 import okra.exception.InvalidOkraConfigurationException;
@@ -46,7 +47,7 @@ public class OkraSpringBuilder<T extends OkraItem> extends OkraBuilder<T> {
                 getCollection(),
                 getExpireDuration(),
                 getExpireDurationUnit(),
-                getScheduleItemClass()
+                getItemClass()
         );
     }
 
@@ -57,19 +58,16 @@ public class OkraSpringBuilder<T extends OkraItem> extends OkraBuilder<T> {
      * @return this builder
      */
     public OkraSpringBuilder<T> withMongoTemplate(final MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
+        this.mongoTemplate = Preconditions.checkConfigurationNotNull(mongoTemplate, "mongoTemplate");
         return this;
     }
 
-    @Override
-    public void validateConfiguration() {
+    private void validateConfiguration() {
         if (mongoTemplate == null
                 || getCollection() == null
                 || getCollection().isEmpty()
                 || getDatabase() == null
-                || getDatabase().isEmpty()
-                || getExpireDuration() == null
-                || getExpireDurationUnit() == null) {
+                || getDatabase().isEmpty()) {
 
             LOGGER.error("Invalid MongoScheduler configuration. " +
                             "Please verify params: " +

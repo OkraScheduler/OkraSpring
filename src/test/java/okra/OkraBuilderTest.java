@@ -41,7 +41,7 @@ public class OkraBuilderTest {
     public void shouldValidateNullMongoTemplate() {
         Okra<OkraItem> okra = new OkraSpringBuilder<>()
                 .withDatabase("dbName")
-                .withSchedulerCollectionName("schedulerCollection")
+                .withCollection("schedulerCollection")
                 .build();
     }
 
@@ -64,7 +64,7 @@ public class OkraBuilderTest {
         Okra<OkraItem> okra = new OkraSpringBuilder<>()
                 .withMongoTemplate(new MongoTemplate(client, "dbName"))
                 .withDatabase("dbName")
-                .withSchedulerCollectionName("testCollection")
+                .withCollection("testCollection")
                 .withExpiration(5, TimeUnit.MINUTES)
                 .build();
 
