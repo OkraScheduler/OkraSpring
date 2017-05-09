@@ -41,7 +41,7 @@ public class EnsureHeartbeatTest extends OkraBaseContainerTest {
         given_an_item_is_scheduled();
 
         // Retrieve the item
-        Optional<DefaultOkraItem> itemOpt = getDefaultOkra().poll();
+        Optional<DefaultOkraItem> itemOpt = getDefaultOkra().peek();
 
         assertThat(itemOpt.isPresent()).isTrue();
 

@@ -67,7 +67,6 @@ public abstract class OkraBaseContainerTest {
                 .withExpiration(5, TimeUnit.MINUTES)
                 .withItemClass(DefaultOkraItem.class)
                 .build();
-
     }
 
     public static Okra<DefaultOkraItem> prepareDefaultMongo34OkraSpring() throws UnknownHostException {
@@ -82,11 +81,9 @@ public abstract class OkraBaseContainerTest {
                 .withExpiration(5, TimeUnit.MINUTES)
                 .withItemClass(DefaultOkraItem.class)
                 .build();
-
     }
 
     public Okra<DefaultOkraItem> getDefaultOkra() {
         return okraSpringMongo32;
     }
-
 }
