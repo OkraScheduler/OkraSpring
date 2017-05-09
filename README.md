@@ -29,15 +29,15 @@ build.gradle
 
 ```groovy
     dependencies {
-        compile 'com.github.fernandonogueira.okra:okra-spring:x.y.z'
+        compile 'com.github.OkraScheduler:OkraSpring:x.y.z'
     }
 ```
 
 #### Maven
 ```xml
 	<dependency>
-	    <groupId>com.github.fernandonogueira.okra</groupId>
-	    <artifactId>okra-spring</artifactId>
+	    <groupId>com.github.OkraScheduler</groupId>
+	    <artifactId>OkraSpring</artifactId>
 	    <version>x.y.z</version>
 	</dependency>
 
@@ -61,10 +61,10 @@ public class MyScheduler {
         okra = new OkraSpringBuilder<DefaultOkraItem>()
                         .withMongoTemplate(new MongoTemplate(client, "schedulerBenchmark"))
                         .withDatabase("schedulerBenchmark")
-                        .withSchedulerCollectionName("schedulerCollection")
+                        .withCollection("schedulerCollection")
                         .withExpiration(5, TimeUnit.MINUTES)
-                        .withScheduledItemClass(DefaultOkraItem.class)
-                        .validateAndBuild();        
+                        .withItemClass(DefaultOkraItem.class)
+                        .build();        
     }
     ...    
 }
@@ -97,7 +97,7 @@ $ git clone git@github.com:fernandonogueira/okra.git
 $ cd okra
 $ mvn install -DskipTests
 ```
-[![Build Status](https://travis-ci.org/fernandonogueira/okra.svg?branch=master)](https://travis-ci.org/fernandonogueira/okra)
+[![Build Status](https://travis-ci.org/OkraScheduler/OkraSpring.svg?branch=master)](https://travis-ci.org/OkraScheduler/OkraSpring)
 
 ### LICENSE
 ```
