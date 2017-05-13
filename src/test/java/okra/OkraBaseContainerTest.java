@@ -61,7 +61,7 @@ public abstract class OkraBaseContainerTest {
                 mongo32Container.getMappedPort(27017));
 
         return new OkraSpringBuilder<DefaultOkraItem>()
-                .withMongoTemplate(new MongoTemplate(client, "okraBenchmark"))
+                .withMongoTemplate(new MongoTemplate(client, "okraSpringTests"))
                 .withDatabase("okraSpringTests")
                 .withCollection("schedulerCollection")
                 .withExpiration(5, TimeUnit.MINUTES)
@@ -75,7 +75,7 @@ public abstract class OkraBaseContainerTest {
                 mongo34Container.getMappedPort(27017));
 
         return new OkraSpringBuilder<DefaultOkraItem>()
-                .withMongoTemplate(new MongoTemplate(client, "okraBenchmark"))
+                .withMongoTemplate(new MongoTemplate(client, "okraSpringTests"))
                 .withDatabase("okraSpringTests")
                 .withCollection("schedulerCollection")
                 .withExpiration(5, TimeUnit.MINUTES)

@@ -74,7 +74,7 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
         final LocalDateTime expiredHeartbeatDate = LocalDateTime
                 .now()
                 .minus(defaultHeartbeatExpirationMillis, ChronoUnit.MILLIS);
-        final Criteria mainOr = generatePollCriteria(expiredHeartbeatDate);
+        final Criteria mainOr = generatePeekCriteria(expiredHeartbeatDate);
         final Update update = Update
                 .update("status", OkraStatus.PROCESSING)
                 .set("heartbeat", LocalDateTime.now());
@@ -88,7 +88,7 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
         return peek().orElseThrow(OkraItemNotFoundException::new);
     }
 
-    private Criteria generatePollCriteria(final LocalDateTime expiredHeartbeatDate) {
+    private Criteria generatePeekCriteria(final LocalDateTime expiredHeartbeatDate) {
         final Criteria pendingCriteria = new Criteria().andOperator(
                 Criteria.where("runDate").lt(LocalDateTime.now()),
                 Criteria.where("status").is(OkraStatus.PENDING)
@@ -167,6 +167,11 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
         validateSchedule(item);
         item.setStatus(OkraStatus.PENDING);
         mongoTemplate.save(item, getCollection());
+    }
+
+    @Override
+    public long countByStatus(OkraStatus status) {
+        return mongoTemplate.count(Query.query(Criteria.where("status").is(status)), getCollection());
     }
 
     private void validateSchedule(final T item) {

@@ -30,7 +30,7 @@
     <groupId>com.github.OkraScheduler</groupId>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>OkraSpring</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0-SNAPSHOT</version>
 
     <properties>
         <source.enconding>UTF-8</source.enconding>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>com.github.OkraScheduler</groupId>
             <artifactId>OkraApi</artifactId>
-            <version>-SNAPSHOT</version>
+            <version>1.1.1</version>
         </dependency>
 
         <!-- Spring -->
@@ -73,7 +73,13 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.1.7</version>
+            <version>1.1.8</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.8</version>
             <scope>test</scope>
         </dependency>
         <dependency>
