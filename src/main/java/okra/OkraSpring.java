@@ -169,6 +169,11 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
         mongoTemplate.save(item, getCollection());
     }
 
+    @Override
+    public long countByStatus(final OkraStatus status) {
+        return mongoTemplate.count(Query.query(Criteria.where("status").is(status)), scheduleItemClass);
+    }
+
     private void validateSchedule(final T item) {
         if (item.getId() != null) {
             LOGGER.error("Impossible to schedule item because it already has an ID. Item: {}", item);
