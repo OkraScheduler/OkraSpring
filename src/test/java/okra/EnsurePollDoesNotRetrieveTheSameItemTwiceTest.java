@@ -33,26 +33,40 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EnsurePollDoesNotRetrieveTheSameItemTwiceTest extends OkraBaseContainerTest {
 
     @Test
-    public void ensurePollDoesntRetrieveTheSameItemTwiceTest() {
-        given_that_an_item_was_scheduled();
+    public void ensurePollDoesntRetrieveTheSameItemTwiceWhenOnlyAItemIsPersistedBeforeTest() {
+        final DefaultOkraItem persistedItem = new DefaultOkraItem();
+        persistedItem.setRunDate(LocalDateTime.now().minusNanos(100));
+        getDefaultOkra().schedule(persistedItem);
 
-        Optional<DefaultOkraItem> retrievedOpt = getDefaultOkra().poll();
-
+        final Optional<DefaultOkraItem> retrievedOpt = getDefaultOkra().poll();
         assertThat(retrievedOpt.isPresent()).isTrue();
 
-        DefaultOkraItem item = retrievedOpt.get();
-
-        Optional<DefaultOkraItem> optThatShouldBeEmpty = getDefaultOkra().poll();
-
+        final DefaultOkraItem item = retrievedOpt.get();
+        final Optional<DefaultOkraItem> optThatShouldBeEmpty = getDefaultOkra().poll();
         assertThat(optThatShouldBeEmpty.isPresent()).isFalse();
 
-        // Then... Delete acquired item
         getDefaultOkra().delete(item);
     }
 
-    private void given_that_an_item_was_scheduled() {
-        DefaultOkraItem item = new DefaultOkraItem();
-        item.setRunDate(LocalDateTime.now().minusNanos(100));
-        getDefaultOkra().schedule(item);
+    @Test
+    public void ensurePollDoesntRetrieveTheSameItemTwiceTest() {
+        final DefaultOkraItem persistedItem1 = new DefaultOkraItem();
+        persistedItem1.setRunDate(LocalDateTime.now().minusNanos(100));
+        getDefaultOkra().schedule(persistedItem1);
+
+        final DefaultOkraItem persistedItem2 = new DefaultOkraItem();
+        persistedItem2.setRunDate(LocalDateTime.now().minusNanos(100));
+        getDefaultOkra().schedule(persistedItem2);
+
+        final Optional<DefaultOkraItem> retrievedOpt1 = getDefaultOkra().poll();
+        assertThat(retrievedOpt1.isPresent()).isTrue();
+
+        final Optional<DefaultOkraItem> retrievedOpt2 = getDefaultOkra().poll();
+        assertThat(retrievedOpt2.isPresent()).isTrue();
+
+        assertThat(retrievedOpt1).isNotEqualTo(retrievedOpt2);
+
+        getDefaultOkra().delete(retrievedOpt1.get());
+        getDefaultOkra().delete(retrievedOpt2.get());
     }
 }

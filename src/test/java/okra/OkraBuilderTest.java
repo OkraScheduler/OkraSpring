@@ -39,30 +39,24 @@ public class OkraBuilderTest {
 
     @Test(expected = InvalidOkraConfigurationException.class)
     public void shouldValidateNullMongoTemplate() {
-        Okra<OkraItem> okra = new OkraSpringBuilder<>()
+        new OkraSpringBuilder<>()
                 .withDatabase("dbName")
                 .withCollection("schedulerCollection")
                 .build();
     }
 
-
     @Test(expected = InvalidOkraConfigurationException.class)
     public void shouldValidateNullCollectionName() throws UnknownHostException {
-
-        MongoClient client = new MongoClient("localhost");
-
-        Okra<OkraItem> okra = new OkraSpringBuilder<>()
-                .withMongoTemplate(new MongoTemplate(client, "dbName"))
+        new OkraSpringBuilder<>()
+                .withMongoTemplate(new MongoTemplate(new MongoClient("localhost"), "dbName"))
                 .withDatabase("dbName")
                 .build();
     }
 
     @Test
     public void shouldCreateNewOkra() throws UnknownHostException {
-        MongoClient client = new MongoClient("localhost");
-
-        Okra<OkraItem> okra = new OkraSpringBuilder<>()
-                .withMongoTemplate(new MongoTemplate(client, "dbName"))
+        final Okra<OkraItem> okra = new OkraSpringBuilder<>()
+                .withMongoTemplate(new MongoTemplate(new MongoClient("localhost"), "dbName"))
                 .withDatabase("dbName")
                 .withCollection("testCollection")
                 .withExpiration(5, TimeUnit.MINUTES)
@@ -70,5 +64,4 @@ public class OkraBuilderTest {
 
         assertThat(okra).isNotNull();
     }
-
 }

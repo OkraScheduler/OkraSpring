@@ -22,7 +22,6 @@
  */
 package okra;
 
-import okra.base.Okra;
 import okra.model.DefaultOkraItem;
 import org.junit.Test;
 
@@ -37,43 +36,26 @@ public class EnsureHeartbeatTest extends OkraBaseContainerTest {
 
     @Test
     public void ensureHeartbeatTest() {
+        final DefaultOkraItem persistedItem = new DefaultOkraItem();
+        persistedItem.setRunDate(LocalDateTime.now().minusSeconds(1));
+        getDefaultOkra().schedule(persistedItem);
 
-        given_an_item_is_scheduled();
-
-        // Retrieve the item
-        Optional<DefaultOkraItem> itemOpt = getDefaultOkra().peek();
-
+        final Optional<DefaultOkraItem> itemOpt = getDefaultOkra().peek();
         assertThat(itemOpt.isPresent()).isTrue();
 
-        DefaultOkraItem item = itemOpt.get();
-
+        final DefaultOkraItem item = itemOpt.get();
         assertThat(item.getHeartbeat()).isNotNull();
-        assertThat(
-                Math.abs(item.getHeartbeat().until(LocalDateTime.now(), ChronoUnit.MICROS)))
+        assertThat(Math.abs(item.getHeartbeat().until(LocalDateTime.now(), ChronoUnit.MICROS)))
                 .isLessThan(TimeUnit.MILLISECONDS.toNanos(100));
 
-        // then, try to heartbeat it
-        Optional<DefaultOkraItem> itemHeartbeatOpt = getDefaultOkra().heartbeat(item);
-
-        // Must be succeeded
+        final Optional<DefaultOkraItem> itemHeartbeatOpt = getDefaultOkra().heartbeat(item);
         assertThat(itemHeartbeatOpt.isPresent()).isTrue();
 
-        DefaultOkraItem itemHeartbeat = itemHeartbeatOpt.get();
-        assertThat(
-                Math.abs(itemHeartbeat.getHeartbeat().until(LocalDateTime.now(), ChronoUnit.MICROS)))
+        final DefaultOkraItem itemHeartbeat = itemHeartbeatOpt.get();
+        assertThat(Math.abs(itemHeartbeat.getHeartbeat().until(LocalDateTime.now(), ChronoUnit.MICROS)))
                 .isLessThan(TimeUnit.MILLISECONDS.toNanos(100));
 
-        assertThat(itemHeartbeat).isNotEqualTo(itemOpt.get());
-        assertThat(itemHeartbeat.getHeartbeat()).isNotEqualTo(itemOpt.get().getHeartbeat());
-    }
-
-    private void given_an_item_is_scheduled() {
-        DefaultOkraItem item = new DefaultOkraItem();
-        item.setRunDate(LocalDateTime.now().minusSeconds(1));
-        getDefaultOkra().schedule(item);
-    }
-
-    public Okra<DefaultOkraItem> getDefaultOkra() {
-        return okraSpringMongo32;
+        assertThat(itemHeartbeat).isNotEqualTo(item);
+        assertThat(itemHeartbeat.getHeartbeat()).isNotEqualTo(item.getHeartbeat());
     }
 }
