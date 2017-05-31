@@ -30,7 +30,7 @@
     <groupId>com.github.OkraScheduler</groupId>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>OkraSpring</artifactId>
-    <version>1.0.0</version>
+    <version>1.2.0</version>
 
     <properties>
         <source.enconding>UTF-8</source.enconding>

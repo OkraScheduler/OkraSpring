@@ -40,11 +40,6 @@ public abstract class OkraBaseContainerTest {
 
     private OkraSpring<DefaultOkraItem> okraSpring;
 
-    @Before
-    public void setUp() throws UnknownHostException {
-        okraSpring = prepareDefaultMongo34OkraSpring();
-    }
-
     public static OkraSpring<DefaultOkraItem> prepareDefaultMongo34OkraSpring() throws UnknownHostException {
         final MongoClient client = new MongoClient(
                 mongoContainer.getContainerIpAddress(),
@@ -58,6 +53,11 @@ public abstract class OkraBaseContainerTest {
                 .withExpiration(5, TimeUnit.MINUTES)
                 .withItemClass(DefaultOkraItem.class)
                 .build();
+    }
+
+    @Before
+    public void setUp() throws UnknownHostException {
+        okraSpring = prepareDefaultMongo34OkraSpring();
     }
 
     public OkraSpring<DefaultOkraItem> getDefaultOkra() {
