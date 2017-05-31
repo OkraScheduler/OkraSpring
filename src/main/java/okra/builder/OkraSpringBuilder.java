@@ -25,7 +25,7 @@ package okra.builder;
 import okra.OkraSpring;
 import okra.Preconditions;
 import okra.base.AbstractOkra;
-import okra.base.OkraItem;
+import okra.base.model.OkraItem;
 import okra.exception.InvalidOkraConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

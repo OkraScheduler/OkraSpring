@@ -24,7 +24,7 @@ package okra;
 
 import com.mongodb.MongoClient;
 import okra.base.Okra;
-import okra.base.OkraItem;
+import okra.base.model.OkraItem;
 import okra.builder.OkraSpringBuilder;
 import okra.exception.InvalidOkraConfigurationException;
 import org.junit.Test;

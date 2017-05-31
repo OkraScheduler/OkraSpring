@@ -46,7 +46,7 @@
         <dependency>
             <groupId>com.github.OkraScheduler</groupId>
             <artifactId>OkraApi</artifactId>
-            <version>1.2.0</version>
+            <version>1.4.6</version>
         </dependency>
 
         <!-- Spring -->

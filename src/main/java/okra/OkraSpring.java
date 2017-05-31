@@ -22,9 +22,9 @@
  */
 package okra;
 
-import okra.base.AbstractOkra;
-import okra.base.OkraItem;
-import okra.base.OkraStatus;
+import okra.base.model.OkraItem;
+import okra.base.model.OkraStatus;
+import okra.base.spring.AbstractOkraSpring;
 import okra.exception.OkraItemNotFoundException;
 import okra.exception.OkraRuntimeException;
 import org.bson.types.ObjectId;
@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
+public class OkraSpring<T extends OkraItem> extends AbstractOkraSpring<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OkraSpring.class);
 
@@ -127,18 +127,15 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
 
     @Override
     public Optional<T> heartbeatAndUpdateCustomAttrs(final T item, final Map<String, Object> attrs) {
-        if (item.getId() == null
-                || item.getHeartbeat() == null
-                || item.getStatus() == null) {
+        if (item.getId() == null || item.getHeartbeat() == null || item.getStatus() == null) {
             return Optional.empty();
         }
 
-        final Criteria criteria = Criteria
+        final Query query = Query.query(Criteria
                 .where("_id").is(new ObjectId(item.getId()))
                 .and("status").is(OkraStatus.PROCESSING)
-                .and("heartbeat").is(item.getHeartbeat());
-
-        final Query query = Query.query(criteria);
+                .and("heartbeat").is(item.getHeartbeat())
+        );
 
         final Update update = Update.update("heartbeat", LocalDateTime.now());
 
@@ -147,7 +144,6 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
         }
 
         final FindAndModifyOptions opts = new FindAndModifyOptions().returnNew(true);
-
         LOGGER.info("Querying for schedules using query: {}", query);
 
         return Optional.ofNullable(mongoTemplate.findAndModify(query, update, opts, scheduleItemClass, getCollection()));
@@ -172,6 +168,11 @@ public class OkraSpring<T extends OkraItem> extends AbstractOkra<T> {
     @Override
     public long countByStatus(final OkraStatus status) {
         return mongoTemplate.count(Query.query(Criteria.where("status").is(status)), scheduleItemClass);
+    }
+
+    @Override
+    public long countDelayed() {
+        throw new OkraRuntimeException("Not implemented yet");
     }
 
     private void validateSchedule(final T item) {

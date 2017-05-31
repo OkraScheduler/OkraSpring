@@ -23,7 +23,6 @@
 package okra;
 
 import com.mongodb.MongoClient;
-import okra.base.Okra;
 import okra.builder.OkraSpringBuilder;
 import okra.model.DefaultOkraItem;
 import org.junit.Before;
@@ -39,20 +38,20 @@ public abstract class OkraBaseContainerTest {
     @ClassRule
     public static GenericContainer mongoContainer = new GenericContainer("mongo:3.4").withExposedPorts(27017);
 
-    private Okra<DefaultOkraItem> okraSpring;
+    private OkraSpring<DefaultOkraItem> okraSpring;
 
     @Before
     public void setUp() throws UnknownHostException {
         okraSpring = prepareDefaultMongo34OkraSpring();
     }
 
-    public static Okra<DefaultOkraItem> prepareDefaultMongo34OkraSpring() throws UnknownHostException {
+    public static OkraSpring<DefaultOkraItem> prepareDefaultMongo34OkraSpring() throws UnknownHostException {
         final MongoClient client = new MongoClient(
                 mongoContainer.getContainerIpAddress(),
                 mongoContainer.getMappedPort(27017)
         );
 
-        return new OkraSpringBuilder<DefaultOkraItem>()
+        return (OkraSpring<DefaultOkraItem>) new OkraSpringBuilder<DefaultOkraItem>()
                 .withMongoTemplate(new MongoTemplate(client, "okraBenchmark"))
                 .withDatabase("okraSpringTests")
                 .withCollection("schedulerCollection")
@@ -61,7 +60,7 @@ public abstract class OkraBaseContainerTest {
                 .build();
     }
 
-    public Okra<DefaultOkraItem> getDefaultOkra() {
+    public OkraSpring<DefaultOkraItem> getDefaultOkra() {
         return okraSpring;
     }
 }
